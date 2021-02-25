@@ -1,20 +1,21 @@
 const AWS = require("aws-sdk");
 const MOMENT = require("moment");
 const numberOfDays = 15;
-
 AWS.config.update({ region: "eu-west-2" });
-
-// Create S3 service object
 s3 = new AWS.S3({ apiVersion: "2006-03-01" });
 
-// Call S3 to list the buckets
+exports.handler = async (event) => {
+  listBuckets();
+};
 
-listBuckets();
-
-async function listBuckets() {
-  var hamada = await s3.listBuckets();
-
-  console.log(hamada.then);
+function listBuckets() {
+  s3.listBuckets(function (err, data) {
+    if (!err) {
+      data.Buckets.forEach((element) => {
+        if (element.Name.includes("database")) listObjects(element.Name);
+      });
+    }
+  });
 }
 
 function listObjects(BucketName) {
